@@ -338,4 +338,143 @@ describe('App Component', () => {
 
         expect(mockLocalStorage.setItem).toHaveBeenCalledWith('todos', expect.any(String));
     });
+
+    it('validates todo text and trims whitespace properly', () => {
+        render(<App />);
+        const input = screen.getByPlaceholderText(/Add a new task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
+
+        // Test empty string
+        mockLocalStorage.setItem.mockReset();
+        fireEvent.change(input, { target: { value: '' } });
+        fireEvent.click(submitButton);
+        expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+        expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+
+        // Test pure whitespace 
+        fireEvent.change(input, { target: { value: '     ' } });
+        fireEvent.click(submitButton); 
+        expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+        expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+
+        // Test whitespace around valid text
+        fireEvent.change(input, { target: { value: '  Test Todo  ' } });
+        fireEvent.click(submitButton);
+        expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        expect(mockLocalStorage.setItem).toHaveBeenCalled();
+        
+        // Test todo with special characters
+        fireEvent.change(input, { target: { value: '!@#$%^&*()' } });
+        fireEvent.click(submitButton);
+        expect(screen.getByText('!@#$%^&*()')).toBeInTheDocument();
+
+        // Test very long todo text
+        const longText = 'a'.repeat(100);
+        fireEvent.change(input, { target: { value: longText } });
+        fireEvent.click(submitButton);
+        expect(screen.getByText(longText)).toBeInTheDocument();
+            expect(screen.getByText(longText)).toBeInTheDocument();
+        });
+        });
+it('handles todo text edge cases', () => {
+    render(<App />);
+    const input = screen.getByPlaceholderText(/Add a new task/i);
+    const submitButton = screen.getByTestId('add-todo-button');
+
+    // Test empty string
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(submitButton);
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+
+    // Test whitespace only
+    fireEvent.change(input, { target: { value: '   ' } });
+    fireEvent.click(submitButton);
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+
+    // Test valid text
+    fireEvent.change(input, { target: { value: 'Valid Todo' } });
+    fireEvent.click(submitButton);
+    expect(screen.getByText('Valid Todo')).toBeInTheDocument();
 });
+it('renders empty state message when no todos match filter', () => {
+    render(<App />);
+    
+    // Verify initial empty state
+    expect(screen.getByText('No Todos Found')).toBeInTheDocument();
+
+    // Add a completed todo
+    const input = screen.getByPlaceholderText(/Add a new task/i);
+    const submitButton = screen.getByTestId('add-todo-button');
+    fireEvent.change(input, { target: { value: 'Test Todo' } });
+    fireEvent.click(submitButton);
+});
+    it('validates todo text with edge cases and updates UI correctly', () => {
+        const mockLocalStorage = {
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+            clear: jest.fn()
+        };
+        Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
+        mockLocalStorage.getItem.mockReturnValue(JSON.stringify([]));
+        mockLocalStorage.setItem.mockReset();
+
+        render(<App />);
+        const input = screen.getByPlaceholderText(/Add a new task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
+
+        // Test empty strings and whitespace
+        const invalidInputs = ['', ' ', '   '];
+        invalidInputs.forEach(value => {
+            mockLocalStorage.setItem.mockClear();
+            fireEvent.change(input, { target: { value }});
+            fireEvent.click(submitButton);
+            expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+            expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+        });
+
+        // Test valid inputs with whitespace trimming
+        const validInputs = [
+            { input: 'Valid Todo', expected: 'Valid Todo' },
+            { input: '  Padded Todo  ', expected: 'Padded Todo' },
+            { input: 'Multiple   Spaces', expected: 'Multiple Spaces' }
+        ];
+        validInputs.forEach(({ input, expected }) => {
+            fireEvent.change(screen.getByPlaceholderText(/Add a new task/i), { target: { value: input }});
+            fireEvent.click(submitButton);
+            expect(screen.getByText(expected)).toBeInTheDocument();
+            expect(mockLocalStorage.setItem).toHaveBeenCalled();
+            mockLocalStorage.setItem.mockReset();
+        });
+    });
+
+    it('verifies dashboard view with filtered todos', () => {
+        render(<App />);
+        const input = screen.getByPlaceholderText(/Add a new task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
+        
+        // Add and complete first todo
+        fireEvent.change(input, { target: { value: 'Completed Task' }});
+        fireEvent.click(submitButton);
+        const firstCheckbox = screen.getByTestId(/todo-checkbox-/i);
+        fireEvent.click(firstCheckbox);
+        
+        // Add active todo
+        fireEvent.change(input, { target: { value: 'Active Task' }});
+        fireEvent.click(submitButton);
+        
+        // Switch to dashboard view
+        const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+        fireEvent.click(dashboardButton);
+
+        // Verify sections and counts
+        expect(screen.getByText('Active Tasks')).toBeInTheDocument();
+        expect(screen.getByText('Completed Tasks')).toBeInTheDocument();
+        const countElements = screen.queryAllByText(/^\(1\)$/);
+        expect(countElements).toHaveLength(2); // Verify both active and completed show count of 1
+
+        // Verify todos are in correct sections
+        const completedSection = screen.getByTestId('droppable-completed');
+        expect(completedSection).toHaveTextContent('Completed Task');
+        const activeSection = screen.getByTestId('droppable-active');
+        expect(activeSection).toHaveTextContent('Active Task');
+    });
