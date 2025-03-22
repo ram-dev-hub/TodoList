@@ -88,7 +88,7 @@ describe('App Component', () => {
         fireEvent.change(input, { target: { value: 'Toggle Todo' } });
         fireEvent.click(submitButton);
 
-        const checkbox = screen.getByTestId(/todo-checkbox-/i);
+        const checkbox = screen.getAllByTestId(/todo-checkbox-/i)[0];
         fireEvent.click(checkbox);
 
         expect(mockLocalStorage.setItem).toHaveBeenCalled();
@@ -137,7 +137,7 @@ describe('App Component', () => {
         expect(screen.getByText('Active Todo')).toBeInTheDocument();
 
         // Test all filter
-        const allButton = screen.getByRole('button', { name: /^all$/i });
+        const allButton = screen.getByRole('button', { name: /^all \(\d+\)$/i });
         fireEvent.click(allButton);
         expect(screen.getByText('Completed Todo')).toBeInTheDocument();
         expect(screen.getByText('Active Todo')).toBeInTheDocument();
@@ -300,9 +300,9 @@ describe('App Component', () => {
     
         // Test all filter combinations
         const filterButtons = {
-            all: screen.getByRole('button', { name: /^all$/i }),
-            active: screen.getByRole('button', { name: /active/i }),
-            completed: screen.getByRole('button', { name: /completed/i })
+            all: screen.getByRole('button', { name: /^all \(\d+\)$/i }),
+            active: screen.getByRole('button', { name: /^active \(\d+\)$/i }),
+            completed: screen.getByRole('button', { name: /^completed \(\d+\)$/i })
         };
     
         // Test completed filter
@@ -477,4 +477,204 @@ it('renders empty state message when no todos match filter', () => {
         expect(completedSection).toHaveTextContent('Completed Task');
         const activeSection = screen.getByTestId('droppable-active');
         expect(activeSection).toHaveTextContent('Active Task');
+    });
+
+    it('should update todo state when dragged between sections in dashboard view', () => {
+        render(<App />);
+    
+        // Add a todo
+        const input = screen.getByPlaceholderText(/Add a new task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
+        fireEvent.change(input, { target: { value: 'Test Todo' } });
+        fireEvent.click(submitButton);
+    
+        // Switch to dashboard view
+        const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+        fireEvent.click(dashboardButton);
+    
+        // Simulate drag and drop
+        const dragDropContext = screen.getByTestId('drag-drop-context');
+        act(() => {
+            const dragEndEvent = new CustomEvent('dragend', {
+                detail: {
+                    source: { droppableId: 'active' },
+                    destination: { droppableId: 'completed' },
+                    draggableId: '1'
+                }
+            });
+            dragDropContext.dispatchEvent(dragEndEvent);
+        });
+    
+        // Verify the todo was moved to the completed section
+        expect(screen.getByText('Test Todo')).toBeInTheDocument();
+    });
+
+    describe('handleDragEnd Function', () => {
+        it('should move a todo from active to completed', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag from active to completed
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: {
+                        source: { droppableId: 'active' },
+                        destination: { droppableId: 'completed' },
+                        draggableId: '1'
+                    }
+                }));
+            });
+
+            // Verify todo is in completed section
+            const completedSection = screen.getByTestId('droppable-completed');
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
+    
+        it('should move a todo from completed to active', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add and complete a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+            const checkbox = screen.getByTestId(/todo-checkbox-/i);
+            fireEvent.click(checkbox);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag from completed to active
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: {
+                        source: { droppableId: 'completed' },
+                        destination: { droppableId: 'active' },
+                        draggableId: '1'
+                    }
+                }));
+            });
+
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
+    
+        it('should not update todos if dragged within the same section', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag within same section
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: {
+                        source: { droppableId: 'active' },
+                        destination: { droppableId: 'active' },
+                        draggableId: '1'
+                    }
+                }));
+            });
+
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
+
+        it('should not update todos if there is no destination', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag with no destination
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: {
+                        source: { droppableId: 'active' },
+                        destination: null,
+                        draggableId: '1'
+                    }
+                }));
+            });
+
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
+
+        it('should not update todos if the dragged item does not exist', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag with non-existent ID
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: {
+                        source: { droppableId: 'active' },
+                        destination: { droppableId: 'completed' },
+                        draggableId: '999'
+                    }
+                }));
+            });
+
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
+    
+        it('should handle invalid drag operation gracefully', () => {
+            render(<App />);
+            const input = screen.getByPlaceholderText(/Add a new task/i);
+            const submitButton = screen.getByTestId('add-todo-button');
+
+            // Add a todo
+            fireEvent.change(input, { target: { value: 'Test Todo' } });
+            fireEvent.click(submitButton);
+
+            // Switch to dashboard view
+            const dashboardButton = screen.getByTestId('DashboardIcon').closest('button');
+            fireEvent.click(dashboardButton);
+
+            // Simulate drag with null result
+            const dragDropContext = screen.getByTestId('drag-drop-context');
+            act(() => {
+                dragDropContext.dispatchEvent(new CustomEvent('dragend', {
+                    detail: null
+                }));
+            });
+
+            expect(screen.getByText('Test Todo')).toBeInTheDocument();
+        });
     });

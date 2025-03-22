@@ -219,15 +219,15 @@ function App() {
         <Container maxWidth="lg"
             sx={{
                 width: {
-                    xs: '95%', 
-                    sm: '90%', 
-                    md: '80%',
-                    lg: '1200px' 
+                    xs: '90%', 
+                    sm: '80%', 
+                    md: '70%',
+                    lg: '1000px' 
                 },
                 margin: '0 auto'
             }}>
             <Box sx={{ my: 4 }}>
-                <Paper elevation={3} sx={{ p: 3 }}>
+                <Paper elevation={3} sx={{ p: 3, borderRadius: 4 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography variant="h4" component="h1" gutterBottom>
                             Todo List
@@ -236,6 +236,12 @@ function App() {
                             onClick={() => setViewMode(viewMode === 'list' ? 'dashboard' : 'list')}
                             color="primary"
                             title={viewMode === 'list' ? 'Switch to Dashboard View' : 'Switch to List View'}
+                            sx={{ 
+                                borderRadius: '50%',
+                                '&:hover': {
+                                    backgroundColor: '#e3f2fd'
+                                }
+                            }}
                         >
                             {viewMode === 'list' ?
                                 <DashboardIcon aria-label="Switch to Dashboard View" /> :
@@ -243,14 +249,29 @@ function App() {
                             }
                         </IconButton>
                     </Box>
-                    {/*TodoForm component is used to add new todo item use onSubmit prop to add new todo item.*/}
                     <TodoForm onSubmit={addTodo} />
                     {viewMode === 'list' ? (
                         <>
-                            <ButtonGroup fullWidth variant="outlined" sx={{ mb: 2 }}>
-                                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'}>All</Button>
-                                <Button onClick={() => setFilter('active')} variant={filter === 'active' ? 'contained' : 'outlined'}>Active</Button>
-                                <Button onClick={() => setFilter('completed')} variant={filter === 'completed' ? 'contained' : 'outlined'}>Completed</Button>
+                            <ButtonGroup 
+                                fullWidth 
+                                variant="outlined" 
+                                sx={{ 
+                                    mb: 2,
+                                    '& .MuiButton-root': {
+                                        borderRadius: '20px',
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                                        }
+                                    }
+                                }}
+                            >
+                                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'}>All ({todos.length})</Button>
+                                <Button onClick={() => setFilter('active')} variant={filter === 'active' ? 'contained' : 'outlined'}>Active ({activeTodos.length})</Button>
+                                <Button onClick={() => setFilter('completed')} variant={filter === 'completed' ? 'contained' : 'outlined'}>Completed ({completedTodos.length})</Button>
                             </ButtonGroup>
                             
                             {filteredTodos&&filteredTodos.length>0? <TodoList
