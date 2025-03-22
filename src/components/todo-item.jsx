@@ -14,6 +14,7 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
                 cursor: 'pointer',
                 paddingRight: '48px',
             }}
+            title={todo.completed ? "Mark as incomplete" : "Mark as complete"}
         >
             <ListItemIcon>
                 <Checkbox
@@ -23,6 +24,7 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
                     disableRipple
                     data-testid={`todo-checkbox-${todo.id}`}
                     onChange={() => onToggle(todo.id)}
+                    title={todo.completed ? "Mark as incomplete" : "Mark as complete"}
                 />
             </ListItemIcon>
             <ListItemText
@@ -43,6 +45,7 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
                     aria-label="delete"
                     onClick={() => onDelete(todo.id)}
                     data-testid={`delete-button-${todo.id}`}
+                    title="Delete todo"
                 >
                     <DeleteIcon />
                 </IconButton>

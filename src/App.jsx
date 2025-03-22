@@ -252,11 +252,12 @@ function App() {
                                 <Button onClick={() => setFilter('active')} variant={filter === 'active' ? 'contained' : 'outlined'}>Active</Button>
                                 <Button onClick={() => setFilter('completed')} variant={filter === 'completed' ? 'contained' : 'outlined'}>Completed</Button>
                             </ButtonGroup>
-                            <TodoList
+                            
+                            {filteredTodos&&filteredTodos.length>0? <TodoList
                                 todos={filteredTodos}
                                 toggleTodo={toggleTodo}
                                 deleteTodo={deleteTodo}
-                            />
+                            />:<Typography variant="h6" sx={{textAlign:'center'}}>No Todos Found</Typography>}
                         </>
                     ) : (
                         renderDashboard()
