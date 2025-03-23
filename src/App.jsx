@@ -38,9 +38,8 @@ function App() {
         ));
     };
 
-    const deleteTodo = (id) => {
-        /* remove todo item from the list */
-        setTodos(todos.filter(todo => todo.id !== id));
+    const deleteTodo = (id) => {      
+        setTodos(todos.filter(todo => todo.id !== id));      
     };
     // in React 19 automatically memoizing the value, No need to manually use useMemo hook ,but i am using here optionaly suppose the toto list items add more complex itesms its will helpful.
     const filteredTodos = useMemo(() => {
@@ -94,11 +93,35 @@ function App() {
                                 sm: '100%',
                                 md: '90%'
                             },
-                            margin: '0 auto'
+                            margin: '0 auto',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            transition: 'transform 0.2s ease-in-out',
+                            '&:hover': {
+                                transform: 'translateY(-5px)',
+                                boxShadow: '0 6px 12px rgba(0,0,0,0.15)'
+                            }
                         }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="h6">Active Tasks</Typography>
-                            <Typography variant="subtitle1">({activeTodos.length})</Typography>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            mb: 1,
+                            p: 1,
+                            borderBottom: '2px solid #e0e0e0'
+                        }}>
+                            <Typography variant="h6" sx={{ 
+                                fontWeight: 'bold',
+                                color: '#2196f3',
+                                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                            }}>Active Tasks</Typography>
+                            <Typography variant="subtitle1" sx={{
+                                bgcolor: '#2196f3',
+                                color: 'white',
+                                borderRadius: '20px',
+                                px: 2,
+                                py: 0.5
+                            }}>({activeTodos.length})</Typography>
                         </Box>
                         <Droppable droppableId="active">
                             {(provided) => (
@@ -126,7 +149,14 @@ function App() {
                                                         cursor: 'pointer',
                                                         width: { xs: '90%', sm: '85%' },
                                                         margin: '0 auto',
-                                                        marginBottom: 1
+                                                        marginBottom: 1,
+                                                        borderRadius: '8px',
+                                                        transition: 'all 0.3s ease',
+                                                        '&:hover': {
+                                                            bgcolor: '#f8f8f8',
+                                                            transform: 'scale(1.02)',
+                                                            boxShadow: '0 2px 4px rgba(33,150,243,0.2)'
+                                                        }
                                                     }}
                                                 >
                                                     {todo.text}
@@ -144,18 +174,42 @@ function App() {
                     <Paper elevation={3}
                         sx={{
                             p: 2,
-                            bgcolor: '#e8f5e9',
+                            bgcolor: '#f5f5f5',
                             minHeight: 400,
                             width: {
                                 xs: '100%',
                                 sm: '100%',
                                 md: '90%'
                             },
-                            margin: '0 auto'
+                            margin: '0 auto',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            transition: 'transform 0.2s ease-in-out',
+                            '&:hover': {
+                                transform: 'translateY(-5px)',
+                                boxShadow: '0 6px 12px rgba(0,0,0,0.15)'
+                            }
                         }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="h6">Completed Tasks</Typography>
-                            <Typography variant="subtitle1">({completedTodos.length})</Typography>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            mb: 1,
+                            p: 1,
+                            borderBottom: '2px solid #e0e0e0'
+                        }}>
+                            <Typography variant="h6" sx={{ 
+                                fontWeight: 'bold',
+                                color: '#4caf50',
+                                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                            }}>Completed Tasks</Typography>
+                            <Typography variant="subtitle1" sx={{
+                                bgcolor: '#4caf50',
+                                color: 'white',
+                                borderRadius: '20px',
+                                px: 2,
+                                py: 0.5
+                            }}>({completedTodos.length})</Typography>
                         </Box>
                         <Droppable droppableId="completed" data-test-id="droppable-completed">
                             {(provided) => (
@@ -179,28 +233,21 @@ function App() {
                                                         p: 2,
                                                         mb: 1,
                                                         bgcolor: 'white',
-                                                        width: {
-                                                            xs: '90%', 
-                                                            sm: '85%', 
-                                                            md: '80%'  
-                                                        },
+                                                        wordWrap: 'break-word',
+                                                        cursor: 'pointer',
+                                                        width: { xs: '90%', sm: '85%' },
                                                         margin: '0 auto',
                                                         marginBottom: 1,
-                                                        '& .MuiTypography-root': {
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                            maxWidth: {
-                                                                xs: '200px',
-                                                                sm: '300px',
-                                                                md: '400px'
-                                                            }
+                                                        borderRadius: '8px',
+                                                        transition: 'all 0.3s ease',
+                                                        '&:hover': {
+                                                            bgcolor: '#f8f8f8',
+                                                            transform: 'scale(1.02)',
+                                                            boxShadow: '0 2px 4px rgba(76,175,80,0.2)'
                                                         }
                                                     }}
                                                 >
-                                                    <Typography noWrap>
-                                                        {todo.text}
-                                                    </Typography>
+                                                    {todo.text}
                                                 </Paper>
                                             )}
                                         </Draggable>
@@ -216,32 +263,53 @@ function App() {
     );
 
     return (
-        <Container maxWidth="lg"
+        <Container maxWidth="md"
             sx={{
                 width: {
-                    xs: '90%', 
-                    sm: '80%', 
-                    md: '70%',
+                    xs: '70%', 
+                    sm: '60%', 
+                    md: '50%',
                     lg: '1000px' 
                 },
-                margin: '0 auto'
+                margin: '0 auto',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh'
             }}>
-            <Box sx={{ my: 4 }}>
+            <Box sx={{ my: 4, width: '100%' }}>
                 <Paper elevation={3} sx={{ p: 3, borderRadius: 4 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h4" component="h1" gutterBottom>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        mb: 2,
+                        p: 2,
+                        borderRadius: 2,
+                        color: 'black',
+                    }}>
+                        <Typography 
+                            variant="h4" 
+                            component="h1" 
+                            gutterBottom
+                            sx={{ 
+                                m: 0,
+                                fontWeight: 'bold',
+                                textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+                            }}
+                        >
                             Todo List
                         </Typography>
                         <IconButton
                             onClick={() => setViewMode(viewMode === 'list' ? 'dashboard' : 'list')}
-                            color="primary"
-                            title={viewMode === 'list' ? 'Switch to Dashboard View' : 'Switch to List View'}
                             sx={{ 
-                                borderRadius: '50%',
+                                color: '#1976d2',
+                                backgroundColor: 'rgba(255,255,255,0.1)',
                                 '&:hover': {
-                                    backgroundColor: '#e3f2fd'
+                                    backgroundColor: 'rgba(255,255,255,0.2)'
                                 }
                             }}
+                            title={viewMode === 'list' ? 'Switch to Dashboard View' : 'Switch to List View'}
                         >
                             {viewMode === 'list' ?
                                 <DashboardIcon aria-label="Switch to Dashboard View" /> :
@@ -249,15 +317,20 @@ function App() {
                             }
                         </IconButton>
                     </Box>
+                    {/* Rest of the code remains the same */}
                     <TodoForm onSubmit={addTodo} />
                     {viewMode === 'list' ? (
                         <>
-                            <ButtonGroup 
-                                fullWidth 
-                                variant="outlined" 
-                                sx={{ 
-                                    mb: 2,
-                                    '& .MuiButton-root': {
+                            <Box sx={{ 
+                                mb: 2,
+                                display: 'flex',
+                                gap: 2,
+                                justifyContent: 'center'
+                            }}>
+                                <Button 
+                                    onClick={() => setFilter('all')} 
+                                    variant={filter === 'all' ? 'contained' : 'outlined'}
+                                    sx={{
                                         borderRadius: '20px',
                                         textTransform: 'none',
                                         fontWeight: 600,
@@ -266,13 +339,43 @@ function App() {
                                             transform: 'translateY(-2px)',
                                             boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
                                         }
-                                    }
-                                }}
-                            >
-                                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'}>All ({todos.length})</Button>
-                                <Button onClick={() => setFilter('active')} variant={filter === 'active' ? 'contained' : 'outlined'}>Active ({activeTodos.length})</Button>
-                                <Button onClick={() => setFilter('completed')} variant={filter === 'completed' ? 'contained' : 'outlined'}>Completed ({completedTodos.length})</Button>
-                            </ButtonGroup>
+                                    }}
+                                >
+                                    All ({todos.length})
+                                </Button>
+                                <Button 
+                                    onClick={() => setFilter('active')} 
+                                    variant={filter === 'active' ? 'contained' : 'outlined'}
+                                    sx={{
+                                        borderRadius: '20px',
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                                        }
+                                    }}
+                                >
+                                    Active ({activeTodos.length})
+                                </Button>
+                                <Button 
+                                    onClick={() => setFilter('completed')} 
+                                    variant={filter === 'completed' ? 'contained' : 'outlined'}
+                                    sx={{
+                                        borderRadius: '20px',
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                                        }
+                                    }}
+                                >
+                                    Completed ({completedTodos.length})
+                                </Button>
+                            </Box>
                             
                             {filteredTodos&&filteredTodos.length>0? <TodoList
                                 todos={filteredTodos}

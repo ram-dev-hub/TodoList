@@ -14,7 +14,7 @@ describe('TodoForm Component', () => {
         render(<TodoForm onSubmit={mockSubmit} />);
         
         expect(screen.getByPlaceholderText(/Add a new task/i)).toBeInTheDocument();
-        expect(screen.getByText(/Add Task/i)).toBeInTheDocument();
+        expect(screen.getByTestId('add-todo-button')).toBeInTheDocument();
     });
 
     it('updates input value when typing', () => {
@@ -32,7 +32,7 @@ describe('TodoForm Component', () => {
         const input = screen.getByPlaceholderText(/Add a new task/i);
         fireEvent.change(input, { target: { value: 'New Task' } });
         
-        const submitButton = screen.getByText(/Add Task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
         fireEvent.click(submitButton);
         
         expect(mockSubmit).toHaveBeenCalledWith('New Task');
@@ -41,7 +41,7 @@ describe('TodoForm Component', () => {
     it('shows error message when submitting empty task', () => {
         render(<TodoForm onSubmit={mockSubmit} />);
         
-        const submitButton = screen.getByText(/Add Task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
         fireEvent.click(submitButton);
         
         expect(screen.getByText('Task cannot be empty')).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('TodoForm Component', () => {
         
         fireEvent.change(input, { target: { value: longText } });
         
-        const submitButton = screen.getByText(/Add Task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
         fireEvent.click(submitButton);
         
         expect(screen.getByText(/100/)).toBeInTheDocument();
@@ -78,12 +78,12 @@ describe('TodoForm Component', () => {
         const input = screen.getByPlaceholderText(/Add a new task/i);
         
         // First trigger an error
-        fireEvent.click(screen.getByText(/Add Task/i));
+        fireEvent.click(screen.getByTestId('add-todo-button'));
         expect(screen.getByText('Task cannot be empty')).toBeInTheDocument();
         
         // Then submit valid input
         fireEvent.change(input, { target: { value: 'Valid Task' } });
-        fireEvent.click(screen.getByText(/Add Task/i));
+        fireEvent.click(screen.getByTestId('add-todo-button'));
         
         expect(input.value).toBe('');
         expect(screen.queryByText('Task cannot be empty')).not.toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('TodoForm Component', () => {
         const input = screen.getByPlaceholderText(/Add a new task/i);
         fireEvent.change(input, { target: { value: '   ' } });
         
-        const submitButton = screen.getByText(/Add Task/i);
+        const submitButton = screen.getByTestId('add-todo-button');
         fireEvent.click(submitButton);
         
         expect(screen.getByText('Task cannot be empty')).toBeInTheDocument();

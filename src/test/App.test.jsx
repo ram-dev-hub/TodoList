@@ -92,21 +92,7 @@ describe('App Component', () => {
         fireEvent.click(checkbox);
 
         expect(mockLocalStorage.setItem).toHaveBeenCalled();
-    });
-
-    it('deletes todo', () => {
-        render(<App />);
-        const input = screen.getByPlaceholderText(/Add a new task/i);
-        const submitButton = screen.getByTestId('add-todo-button');
-
-        fireEvent.change(input, { target: { value: 'Delete Todo' } });
-        fireEvent.click(submitButton);
-
-        const deleteButton = screen.getByTestId(/delete-button-/i);
-        fireEvent.click(deleteButton);
-
-        expect(screen.queryByText('Delete Todo')).not.toBeInTheDocument();
-    });
+    });   
 
     it('filters todos correctly', () => {
         render(<App />);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { TextField, Button, Box } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const TodoForm = ({ onSubmit }) => {
     const [task, setTask] = useState('');
@@ -63,8 +64,23 @@ const TodoForm = ({ onSubmit }) => {
                 variant="contained"
                 color="primary"
                 data-testid="add-todo-button"
+                startIcon={<AddIcon />}
+                title="Add a new task"
+                sx={{ 
+                    borderRadius: '50%', 
+                    minWidth: '48px', 
+                    width: '48px', 
+                    height: '48px', 
+                    padding: 0,
+                    '& .MuiButton-startIcon': {
+                        margin: 0,
+                        position: 'absolute',
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                    }
+                }}
             >
-                Add Task
+             
             </Button>
         </Box>
     );

@@ -15,6 +15,17 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
                 paddingRight: '48px',
             }}
             title={todo.completed ? "Mark as incomplete" : "Mark as complete"}
+            secondaryAction={
+                <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => onDelete(todo.id)}
+                    data-testid={`delete-button-${todo.id}`}
+                    title="Delete todo"
+                >
+                    <DeleteIcon />
+                </IconButton>
+            }
         >
             <ListItemIcon>
                 <Checkbox
@@ -39,17 +50,6 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
                     }
                 }}
             />
-            <ListItemSecondaryAction>
-                <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={() => onDelete(todo.id)}
-                    data-testid={`delete-button-${todo.id}`}
-                    title="Delete todo"
-                >
-                    <DeleteIcon />
-                </IconButton>
-            </ListItemSecondaryAction>
         </ListItem>
     );
 };
